@@ -1,39 +1,32 @@
 import React, { useState } from 'react';
 import Modal from '../Modal/Modal';
 import './Todo.css';
+import { useAppDispatch } from '../../hooks/useAppHooks';
+import { addTodo } from '../../store/features/todoSlice';
+import TodoList  from './TodoList/TodoList';
 
-interface TodoItem {
-	id: number;
-	text: string;
+interface TodoProps {
+	
 }
-
 const Todo = () => {
-	const [todoList, setTodoList] = useState<TodoItem[]>([]);
+	const [text, setText] = useState('');
 	const [showModal, setShowModal] = useState(false);
+	const dispatch = useAppDispatch()
 
-	const handleAddTodo = (text: string) => {
-		const newTodoList = [...todoList, { id: Date.now(), text }];
-		setTodoList(newTodoList);
-		setShowModal(false);
-	};
-
-	const handleDeleteTodo = (id: number) => {
-		const newTodoList = todoList.filter((todo) => todo.id !== id);
-		setTodoList(newTodoList);
+	const handleAddTodo = () => {
+			if (text.trim().length) {
+			dispatch(addTodo(text))
+			setText('');
+		}
 	};
 
 	return (
 		<div>
 			<h1>Todo List</h1>
 			<button onClick={() => setShowModal(true)}>Add Todo</button>
-			<ul>
-				{todoList.map((todo) => (
-					<li key={todo.id}>
-						{todo.text}
-						<button onClick={() => handleDeleteTodo(todo.id)}>X</button>
-					</li>
-				))}
-			</ul>
+			<div>
+				<TodoList />
+			</div>
 			{showModal && <Modal onAddTodo={handleAddTodo} onClose={() => setShowModal(false)} />}
 		</div>
 	);
